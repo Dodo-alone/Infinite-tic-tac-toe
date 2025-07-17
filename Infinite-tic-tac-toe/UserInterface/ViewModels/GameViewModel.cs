@@ -1,12 +1,7 @@
 ﻿using Infinite_tic_tac_toe.Game;
 using Infinite_tic_tac_toe.Model;
-using Infinite_tic_tac_toe.Solvers;
-using System;
+using Infinite_tic_tac_toe.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,8 +9,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
 {
       public class GameViewModel : ViewModelBase
       {
-            public event PropertyChangedEventHandler? PropertyChanged;
-
+            private readonly IPlayerService _playerService;
             private GameCoordinator? _gameCoordinator;
             private IPlayer? _player1;
             private IPlayer? _player2;
@@ -25,26 +19,17 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
             private string _statusMessage = "Ready to start";
             private (int x, int y)? _selectedPosition = null;
 
-            public object? SelectedPlayer1SettingsView => null;
-            public object? SelectedPlayer2SettingsView => null;
-
             public ObservableCollection<object?> BoardPositions { get; } = new ObservableCollection<object?>(new object?[9]);
 
             public ICommand CellClickCommand { get; }
             public ICommand StartGameCommand { get; }
             public ICommand ResetGameCommand { get; }
 
-            public enum PlayerTypeOption
-            {
-                  Human,
-                  Ai
-            }
+            // Available player types from the service
+            public ReadOnlyCollection<PlayerDescriptor> AvailablePlayerTypes { get; }
 
-            public ObservableCollection<PlayerTypeOption> PlayerOptions { get; } =
-                new ObservableCollection<PlayerTypeOption>(Enum.GetValues(typeof(PlayerTypeOption)).Cast<PlayerTypeOption>());
-
-            private PlayerTypeOption _selectedPlayer1Type = PlayerTypeOption.Human;
-            public PlayerTypeOption SelectedPlayer1Type
+            private PlayerDescriptor? _selectedPlayer1Type;
+            public PlayerDescriptor? SelectedPlayer1Type
             {
                   get => _selectedPlayer1Type;
                   set
@@ -52,15 +37,15 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                         if (_selectedPlayer1Type != value)
                         {
                               _selectedPlayer1Type = value;
-                              Player1 = CreatePlayer(value, PlayerEnum.Cross);
+                              UpdatePlayer1();
                               OnPropertyChanged();
                               OnPropertyChanged(nameof(SelectedPlayer1SettingsView));
                         }
                   }
             }
 
-            private PlayerTypeOption _selectedPlayer2Type = PlayerTypeOption.Ai;
-            public PlayerTypeOption SelectedPlayer2Type
+            private PlayerDescriptor? _selectedPlayer2Type;
+            public PlayerDescriptor? SelectedPlayer2Type
             {
                   get => _selectedPlayer2Type;
                   set
@@ -68,24 +53,31 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                         if (_selectedPlayer2Type != value)
                         {
                               _selectedPlayer2Type = value;
-                              Player2 = CreatePlayer(value, PlayerEnum.Naught);
+                              UpdatePlayer2();
                               OnPropertyChanged();
                               OnPropertyChanged(nameof(SelectedPlayer2SettingsView));
                         }
                   }
             }
 
+            public object? SelectedPlayer1SettingsView =>
+                _selectedPlayer1Type?.RequiresConfiguration == true ?
+                _playerService.GetConfigurationView(_selectedPlayer1Type.Name) : null;
+
+            public object? SelectedPlayer2SettingsView =>
+                _selectedPlayer2Type?.RequiresConfiguration == true ?
+                _playerService.GetConfigurationView(_selectedPlayer2Type.Name) : null;
 
             public IPlayer? Player1
             {
                   get => _player1;
-                  set { _player1 = value; OnPropertyChanged(); }
+                  private set { _player1 = value; OnPropertyChanged(); }
             }
 
             public IPlayer? Player2
             {
                   get => _player2;
-                  set { _player2 = value; OnPropertyChanged(); }
+                  private set { _player2 = value; OnPropertyChanged(); }
             }
 
             public string StatusMessage
@@ -96,14 +88,34 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
 
             public bool IsCellClickEnabled => _isGameRunning && _currentHumanPlayer?.PlayerType == PlayerType.Local;
 
-            public GameViewModel()
+            public GameViewModel() : this(new PlayerService())
             {
+            }
+
+            public GameViewModel(IPlayerService playerService)
+            {
+                  _playerService = playerService;
+                  AvailablePlayerTypes = _playerService.GetAvailablePlayerTypes();
+
                   CellClickCommand = new RelayCommand(OnCellClicked, _ => IsCellClickEnabled);
                   StartGameCommand = new RelayCommand(async _ => await StartGame(), _ => !_isGameRunning);
                   ResetGameCommand = new RelayCommand(_ => ResetGame(), _ => _isGameRunning);
 
-                  Player1 = new HumanPlayer(PlayerEnum.Cross);
-                  Player2 = new AIPlayer(PlayerEnum.Naught, new SimpleMiniMaxGameSolver());
+                  // Set default selections
+                  SelectedPlayer1Type = AvailablePlayerTypes.FirstOrDefault(p => p.Name == "Human");
+                  SelectedPlayer2Type = AvailablePlayerTypes.FirstOrDefault(p => p.Name.StartsWith("AI_"));
+            }
+
+            private void UpdatePlayer1()
+            {
+                  Player1 = _selectedPlayer1Type != null ?
+                      _playerService.CreatePlayer(_selectedPlayer1Type.Name, PlayerEnum.Cross) : null;
+            }
+
+            private void UpdatePlayer2()
+            {
+                  Player2 = _selectedPlayer2Type != null ?
+                      _playerService.CreatePlayer(_selectedPlayer2Type.Name, PlayerEnum.Naught) : null;
             }
 
             private async Task StartGame()
@@ -145,7 +157,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                   Application.Current.Dispatcher.Invoke(() =>
                   {
                         for (int i = 0; i < 9; i++)
-                              BoardPositions[i] = board.GetPosition(i%3, i/3);
+                              BoardPositions[i] = board.GetPosition(i % 3, i / 3);
                   });
             }
 
@@ -226,16 +238,5 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                         }
                   }
             }
-
-            private IPlayer CreatePlayer(PlayerTypeOption type, PlayerEnum assigned)
-            {
-                  return type switch
-                  {
-                        PlayerTypeOption.Human => new HumanPlayer(assigned),
-                        PlayerTypeOption.Ai => new AIPlayer(assigned, new SimpleMiniMaxGameSolver()),
-                        _ => throw new InvalidOperationException("Unsupported player type")
-                  };
-            }
-
       }
 }

@@ -11,16 +11,18 @@
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
                   <StackPanel Margin="5">
                         <TextBlock Text="Player 1 (Cross):" />
-                        <ComboBox ItemsSource="{Binding PlayerOptions}"
-                          SelectedItem="{Binding SelectedPlayer1Type}" />
+                        <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
+                                  SelectedItem="{Binding SelectedPlayer1Type}"
+                                  DisplayMemberPath="DisplayName" />
                         <!-- Dynamic config panel for Player 1 -->
                         <ContentControl Content="{Binding SelectedPlayer1SettingsView}" />
                   </StackPanel>
 
                   <StackPanel Margin="5">
                         <TextBlock Text="Player 2 (Naught):" />
-                        <ComboBox ItemsSource="{Binding PlayerOptions}"
-                          SelectedItem="{Binding SelectedPlayer2Type}" />
+                        <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
+                                  SelectedItem="{Binding SelectedPlayer2Type}"
+                                  DisplayMemberPath="DisplayName" />
                         <ContentControl Content="{Binding SelectedPlayer2SettingsView}" />
                   </StackPanel>
 
