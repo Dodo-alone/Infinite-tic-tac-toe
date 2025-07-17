@@ -115,6 +115,29 @@ namespace Infinite_tic_tac_toe.Model
                   return _board.Count(p => p == player);
             }
 
+            public GameBoard CloneWithChange(int x, int y, PositionEnum newValue)
+            {
+                  var clone = new GameBoard(this);
+                  clone.SetPosition(x, y, newValue);
+                  return clone;
+            }
+
+            public PositionEnum GetAtIndex(int index)
+            {
+                  return _board[index];
+            }
+
+            public static (int x, int y) FromIndex(int index)
+            {
+                  return (index % 3, index / 3);
+            }
+
+            public static int ToIndex(int x, int y)
+            {
+                  return y * 3 + x;
+            }
+
+
             #endregion
 
             #region Public Overide Methods
