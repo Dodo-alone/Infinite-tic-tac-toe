@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace Infinite_tic_tac_toe.Game
 {
+      /// <summary>
+      /// Coordinates a game between two players
+      /// </summary>
       public class GameCoordinator
       {
+
+            #region Public Properties
+
             public IPlayer PlayerCross { get; }
             public IPlayer PlayerNaught { get; }
 
@@ -20,8 +26,16 @@ namespace Infinite_tic_tac_toe.Game
             public event Action<IPlayer>? PlayerTurnStarted;
             public event Action<IPlayer, string>? GameOver;
 
+            #endregion
+
+            #region Member Variables
+
             private bool _isRunning = false;
             private CancellationTokenSource? _cts;
+
+            #endregion
+
+            #region Constructor
 
             public GameCoordinator(IPlayer playerX, IPlayer playerO)
             {
@@ -30,6 +44,14 @@ namespace Infinite_tic_tac_toe.Game
                   CurrentBoard = new GameBoard(); // Empty board
             }
 
+            #endregion
+
+            #region Public Methods
+
+            /// <summary>
+            /// Controls a single game that will run until it is finished or canceled 
+            /// </summary>
+            /// <returns>Nothing</returns>
             public async Task StartGameAsync()
             {
                   if (_isRunning)
@@ -62,7 +84,7 @@ namespace Infinite_tic_tac_toe.Game
                         }
 
                         // Validate the move
-                        if (!IsValidMove(CurrentBoard, proposedBoard, currentPlayer.AssignedPlayer))
+                        if (!IsValidMove(CurrentBoard, proposedBoard, currentPlayer.AssignedPiece))
                         {
                               GameOver?.Invoke(currentPlayer, "Invalid move submitted.");
                               break;
@@ -94,6 +116,10 @@ namespace Infinite_tic_tac_toe.Game
                   _cts?.Cancel();
                   _isRunning = false;
             }
+
+            #endregion
+
+            #region Private Methods
 
             private IPlayer GetCurrentPlayer()
             {
@@ -151,5 +177,7 @@ namespace Infinite_tic_tac_toe.Game
                         return true;
                   }
             }
+
+            #endregion
       }
 }

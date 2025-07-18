@@ -194,7 +194,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
 
                   var (x, y) = GameBoard.FromIndex(index);
                   var currentBoard = _gameCoordinator.CurrentBoard;
-                  var playerSymbol = _currentHumanPlayer.AssignedPlayer == PlayerEnum.Cross ? PositionEnum.Cross : PositionEnum.Naught;
+                  var playerSymbol = _currentHumanPlayer.AssignedPiece == PlayerEnum.Cross ? PositionEnum.Cross : PositionEnum.Naught;
                   var playerPositions = currentBoard.GetPlayerPositions(playerSymbol);
 
                   if (playerPositions.Count < 3)
