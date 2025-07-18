@@ -1,7 +1,9 @@
 ﻿using Infinite_tic_tac_toe.Game;
+using Infinite_tic_tac_toe.Game.Players;
 using Infinite_tic_tac_toe.Model;
 using Infinite_tic_tac_toe.Services;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,6 +11,8 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
 {
       public class GameViewModel : ViewModelBase
       {
+            #region private members
+
             private readonly IPlayerService _playerService;
             private GameCoordinator? _gameCoordinator;
             private IPlayer? _player1;
@@ -19,6 +23,13 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
             private string _statusMessage = "Ready to start";
             private (int x, int y)? _selectedPosition = null;
 
+            private PlayerDescriptor? _selectedPlayer1Type;
+            private PlayerDescriptor? _selectedPlayer2Type;
+
+            #endregion
+
+            #region Public properties
+
             public ObservableCollection<object?> BoardPositions { get; } = new ObservableCollection<object?>(new object?[9]);
 
             public ICommand CellClickCommand { get; }
@@ -28,7 +39,6 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
             // Available player types from the service
             public ReadOnlyCollection<PlayerDescriptor> AvailablePlayerTypes { get; }
 
-            private PlayerDescriptor? _selectedPlayer1Type;
             public PlayerDescriptor? SelectedPlayer1Type
             {
                   get => _selectedPlayer1Type;
@@ -40,11 +50,11 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                               UpdatePlayer1();
                               OnPropertyChanged();
                               OnPropertyChanged(nameof(SelectedPlayer1SettingsView));
+                              OnPropertyChanged(nameof(SelectedPlayer1SettingsViewModel));
                         }
                   }
             }
 
-            private PlayerDescriptor? _selectedPlayer2Type;
             public PlayerDescriptor? SelectedPlayer2Type
             {
                   get => _selectedPlayer2Type;
@@ -56,6 +66,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                               UpdatePlayer2();
                               OnPropertyChanged();
                               OnPropertyChanged(nameof(SelectedPlayer2SettingsView));
+                              OnPropertyChanged(nameof(SelectedPlayer2SettingsViewModel));
                         }
                   }
             }
@@ -67,6 +78,14 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
             public object? SelectedPlayer2SettingsView =>
                 _selectedPlayer2Type?.RequiresConfiguration == true ?
                 _playerService.GetConfigurationView(_selectedPlayer2Type.Name) : null;
+
+            public object? SelectedPlayer1SettingsViewModel =>
+                _selectedPlayer1Type?.RequiresConfiguration == true ?
+                _playerService.GetConfigurationViewModel(_selectedPlayer1Type.Name) : null;
+
+            public object? SelectedPlayer2SettingsViewModel =>
+                _selectedPlayer2Type?.RequiresConfiguration == true ?
+                _playerService.GetConfigurationViewModel(_selectedPlayer2Type.Name) : null;
 
             public IPlayer? Player1
             {
@@ -88,9 +107,39 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
 
             public bool IsCellClickEnabled => _isGameRunning && _currentHumanPlayer?.PlayerType == PlayerType.Local;
 
-            public GameViewModel() : this(new PlayerService())
+            public bool IsStartGameEnabled => !_isGameRunning && ArePlayersValid;
+
+            private bool ArePlayersValid
             {
+                  get
+                  {
+                        if (_selectedPlayer1Type == null || _selectedPlayer2Type == null)
+                              return false;
+
+                        // Check if configurations are valid for players that require them
+                        if (_selectedPlayer1Type.RequiresConfiguration)
+                        {
+                              var config1 = _playerService.GetConfigurationViewModel(_selectedPlayer1Type.Name);
+                              if (config1 is IConfigurationViewModel<IPlayerConfiguration> configVM1 && !configVM1.IsValid)
+                                    return false;
+                        }
+
+                        if (_selectedPlayer2Type.RequiresConfiguration)
+                        {
+                              var config2 = _playerService.GetConfigurationViewModel(_selectedPlayer2Type.Name);
+                              if (config2 is IConfigurationViewModel<IPlayerConfiguration> configVM2 && !configVM2.IsValid)
+                                    return false;
+                        }
+
+                        return true;
+                  }
             }
+
+            #endregion
+
+            #region Constructors
+
+            public GameViewModel() : this(new PlayerService()) { }
 
             public GameViewModel(IPlayerService playerService)
             {
@@ -98,24 +147,69 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                   AvailablePlayerTypes = _playerService.GetAvailablePlayerTypes();
 
                   CellClickCommand = new RelayCommand(OnCellClicked, _ => IsCellClickEnabled);
-                  StartGameCommand = new RelayCommand(async _ => await StartGame(), _ => !_isGameRunning);
+                  StartGameCommand = new RelayCommand(async _ => await StartGame(), _ => IsStartGameEnabled);
                   ResetGameCommand = new RelayCommand(_ => ResetGame(), _ => _isGameRunning);
 
                   // Set default selections
                   SelectedPlayer1Type = AvailablePlayerTypes.FirstOrDefault(p => p.Name == "Human");
                   SelectedPlayer2Type = AvailablePlayerTypes.FirstOrDefault(p => p.Name.StartsWith("AI_"));
+
+                  // Subscribe to configuration changes to update command availability
+                  SubscribeToConfigurationChanges();
+            }
+
+            #endregion
+
+            #region Private Methods
+
+            private void SubscribeToConfigurationChanges()
+            {
+                  // Subscribe to property changes on configuration view models
+                  foreach (var playerType in AvailablePlayerTypes.Where(p => p.RequiresConfiguration))
+                  {
+                        var configViewModel = _playerService.GetConfigurationViewModel(playerType.Name);
+                        if (configViewModel is INotifyPropertyChanged notifyConfig)
+                        {
+                              notifyConfig.PropertyChanged += (s, e) =>
+                              {
+                                    if (e.PropertyName == nameof(IConfigurationViewModel<IPlayerConfiguration>.IsValid))
+                                    {
+                                          OnPropertyChanged(nameof(IsStartGameEnabled));
+                                          CommandManager.InvalidateRequerySuggested();
+                                    }
+                              };
+                        }
+                  }
             }
 
             private void UpdatePlayer1()
             {
-                  Player1 = _selectedPlayer1Type != null ?
-                      _playerService.CreatePlayer(_selectedPlayer1Type.Name, PlayerEnum.Cross) : null;
+                  if (_selectedPlayer1Type != null)
+                  {
+                        var config = _playerService.GetConfigurationViewModel(_selectedPlayer1Type.Name);
+                        Player1 = _playerService.CreatePlayer(_selectedPlayer1Type.Name, PlayerEnum.Cross, config);
+                  }
+                  else
+                  {
+                        Player1 = null;
+                  }
+
+                  OnPropertyChanged(nameof(IsStartGameEnabled));
             }
 
             private void UpdatePlayer2()
             {
-                  Player2 = _selectedPlayer2Type != null ?
-                      _playerService.CreatePlayer(_selectedPlayer2Type.Name, PlayerEnum.Naught) : null;
+                  if (_selectedPlayer2Type != null)
+                  {
+                        var config = _playerService.GetConfigurationViewModel(_selectedPlayer2Type.Name);
+                        Player2 = _playerService.CreatePlayer(_selectedPlayer2Type.Name, PlayerEnum.Naught, config);
+                  }
+                  else
+                  {
+                        Player2 = null;
+                  }
+
+                  OnPropertyChanged(nameof(IsStartGameEnabled));
             }
 
             private async Task StartGame()
@@ -123,6 +217,12 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                   if (Player1 == null || Player2 == null)
                   {
                         MessageBox.Show("Please select both players.");
+                        return;
+                  }
+
+                  if (!ArePlayersValid)
+                  {
+                        MessageBox.Show("Please fix configuration errors before starting the game.");
                         return;
                   }
 
@@ -181,6 +281,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
             private void UpdateInputAvailability()
             {
                   OnPropertyChanged(nameof(IsCellClickEnabled));
+                  OnPropertyChanged(nameof(IsStartGameEnabled));
                   CommandManager.InvalidateRequerySuggested();
             }
 
@@ -238,5 +339,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                         }
                   }
             }
+
+            #endregion
       }
 }

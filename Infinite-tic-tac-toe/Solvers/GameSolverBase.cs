@@ -28,6 +28,12 @@ namespace Infinite_tic_tac_toe.Solvers
 
             #region Public methods
 
+            /// <summary>
+            /// Returns the best move to make next
+            /// </summary>
+            /// <param name="currentBoard">The current game board</param>
+            /// <param name="player">The player whose turn it is</param>
+            /// <returns>A tuple containing then next best move, if a none loosing move exists, and a description of the move</returns>
             public (GameBoard? nextBoard, string moveDescription) GetBestMove(GameBoard currentBoard, PlayerEnum player)
             {
                   var startNode = BuildGameGraph(currentBoard, player);
@@ -43,6 +49,13 @@ namespace Infinite_tic_tac_toe.Solvers
                   return (null, "No valid moves");
             }
 
+            /// <summary>
+            /// Builds a Directed Cyclic graph representing the entire game. a nodes children are 
+            /// possible game states reached from that state
+            /// </summary>
+            /// <param name="startBoard">The starting board</param>
+            /// <param name="startPlayer">the starting player</param>
+            /// <returns>The initial game node, populated with children</returns>
             public GameNode BuildGameGraph(GameBoard startBoard, PlayerEnum startPlayer)
             {
                   string startKey = GenerateStateKey(startBoard, startPlayer);
@@ -55,6 +68,7 @@ namespace Infinite_tic_tac_toe.Solvers
                   var queue = new Queue<GameNode>();
                   queue.Enqueue(rootNode);
 
+                  // BFS to walk the entire tree 
                   while (queue.Count > 0)
                   {
                         var currentNode = queue.Dequeue();
@@ -161,14 +175,32 @@ namespace Infinite_tic_tac_toe.Solvers
 
             #region Protected Methods
 
+            /// <summary>
+            /// A simple key for this game state
+            /// </summary>
+            /// <param name="board">The current board</param>
+            /// <param name="currentPlayer">The current player</param>
+            /// <returns></returns>
             protected static string GenerateStateKey(GameBoard board, PlayerEnum currentPlayer)
             {
                   var positions = board.GetBoardArray();
                   return string.Join("", positions.Select(p => (int)p)) + "_" + (int)currentPlayer;
             }
 
+            /// <summary>
+            /// True if someone is winning in this state
+            /// </summary>
+            /// <param name="board">The board to determine the winner from</param>
+            /// <returns></returns>
             protected static bool IsTerminalState(GameBoard board) => board.CheckWinner() != PositionEnum.Empty;
 
+            /// <summary>
+            /// Generates a move description string
+            /// </summary>
+            /// <param name="oldBoard">The board we moved from</param>
+            /// <param name="newBoard">The board we moved to</param>
+            /// <param name="player">The player who moved</param>
+            /// <returns>A string describing the move</returns>
             protected static string GenerateMoveDescription(GameBoard oldBoard, GameBoard newBoard, PlayerEnum player)
             {
                   PositionEnum playerPos = player == PlayerEnum.Cross ? PositionEnum.Cross : PositionEnum.Naught;
@@ -214,10 +246,24 @@ namespace Infinite_tic_tac_toe.Solvers
                   return "Move made";
             }
 
+            /// <summary>
+            /// Will Evaluate all or part of the graph to score moves
+            /// </summary>
             protected abstract void EvaluateGameGraph();
 
+            /// <summary>
+            /// Calculates a score associated with a specific move
+            /// </summary>
+            /// <param name="value">The value assigned to the node in evaluate game graph</param>
+            /// <param name="player">The current player</param>
+            /// <returns>A double representing how good the move is</returns>
             protected abstract double CalculateMoveScore(NodeValue value, PlayerEnum player);
 
+            /// <summary>
+            /// Generates a score for a node
+            /// </summary>
+            /// <param name="node">The game node we are scoring</param>
+            /// <returns>A node value object</returns>
             protected abstract NodeValue EvaluateNode(GameNode node);
 
             #endregion
