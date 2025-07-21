@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:Infinite_tic_tac_toe"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+            <ResourceDictionary>
+                  <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="UserInterface/Resources/Colours.xaml"/>
+                        <ResourceDictionary Source="UserInterface/Resources/Styles.xaml"/>
+                  </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
     </Application.Resources>
 </Application>

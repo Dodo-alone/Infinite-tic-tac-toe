@@ -8,65 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="450">
       <UserControl.Resources>
-            <!-- Position to Symbol Converter -->
+            <!-- Position Converters -->
             <converters:PositionToSymbolConverter x:Key="PositionConverter"/>
             <converters:PositionToColorConverter x:Key="PositionColorConverter"/>
-
-            <!-- Gradient Brushes -->
-            <LinearGradientBrush x:Key="GameBoardGradient" StartPoint="0,0" EndPoint="1,1">
-                  <GradientStop Color="#ffffff" Offset="0"/>
-                  <GradientStop Color="#f8f9fa" Offset="1"/>
-            </LinearGradientBrush>
-
-            <LinearGradientBrush x:Key="ButtonGradient" StartPoint="0,0" EndPoint="0,1">
-                  <GradientStop Color="#ffffff" Offset="0"/>
-                  <GradientStop Color="#f1f3f4" Offset="1"/>
-            </LinearGradientBrush>
-
-            <LinearGradientBrush x:Key="ButtonHoverGradient" StartPoint="0,0" EndPoint="0,1">
-                  <GradientStop Color="#e8f0fe" Offset="0"/>
-                  <GradientStop Color="#d2e3fc" Offset="1"/>
-            </LinearGradientBrush>
-
-            <!-- Game Cell Button Style -->
-            <Style x:Key="GameCellStyle" TargetType="Button">
-                  <Setter Property="Background" Value="{StaticResource ButtonGradient}"/>
-                  <Setter Property="BorderBrush" Value="#dadce0"/>
-                  <Setter Property="BorderThickness" Value="2"/>
-                  <Setter Property="FontFamily" Value="Segoe UI"/>
-                  <Setter Property="FontSize" Value="36"/>
-                  <Setter Property="FontWeight" Value="Bold"/>
-                  <Setter Property="Foreground" Value="#1a73e8"/>
-                  <Setter Property="Cursor" Value="Hand"/>
-                  <Setter Property="Template">
-                        <Setter.Value>
-                              <ControlTemplate TargetType="Button">
-                                    <Border x:Name="border" 
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="8">
-                                          <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                          <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverGradient}"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="#1a73e8"/>
-                                                <Setter Property="Foreground" Value="#1557b0"/>
-                                          </Trigger>
-                                          <Trigger Property="IsPressed" Value="True">
-                                                <Setter TargetName="border" Property="Background" Value="#d2e3fc"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="#1557b0"/>
-                                          </Trigger>
-                                          <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Opacity" Value="0.8"/>
-                                          </Trigger>
-                                    </ControlTemplate.Triggers>
-                              </ControlTemplate>
-                        </Setter.Value>
-                  </Setter>
-            </Style>
       </UserControl.Resources>
 
       <Border Background="{StaticResource GameBoardGradient}"
