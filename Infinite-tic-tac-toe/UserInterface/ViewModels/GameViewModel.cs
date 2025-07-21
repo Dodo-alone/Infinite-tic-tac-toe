@@ -226,6 +226,8 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                         return;
                   }
 
+                  ResetGameBoard();
+
                   _gameCoordinator = new GameCoordinator(Player1, Player2);
                   _gameCoordinator.BoardUpdated += OnBoardUpdated;
                   _gameCoordinator.PlayerTurnStarted += OnPlayerTurnStarted;
@@ -245,8 +247,7 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                   StatusMessage = "Game reset.";
                   _selectedPosition = null;
 
-                  for (int i = 0; i < 9; i++)
-                        BoardPositions[i] = null;
+                  ResetGameBoard();
 
                   _currentHumanPlayer = null;
                   UpdateInputAvailability();
@@ -338,6 +339,12 @@ namespace Infinite_tic_tac_toe.UserInterface.ViewModels
                               _currentHumanPlayer.SubmitMove(moved);
                         }
                   }
+            }
+
+            private void ResetGameBoard()
+            {
+                  for (int i = 0; i < 9; i++)
+                        BoardPositions[i] = null;
             }
 
             #endregion

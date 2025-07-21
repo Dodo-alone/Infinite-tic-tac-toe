@@ -6,38 +6,226 @@
              xmlns:local="clr-namespace:Infinite_tic_tac_toe.UserInterface.UserControls.Configuration"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-      <Border BorderBrush="LightGray" BorderThickness="1" CornerRadius="5" Padding="10" Margin="5">
+
+      <UserControl.Resources>
+            <!-- Color Palette -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#2563eb"/>
+            <SolidColorBrush x:Key="AccentBrush" Color="#0ea5e9"/>
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#f8fafc"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#e2e8f0"/>
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1e293b"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#64748b"/>
+            <SolidColorBrush x:Key="ErrorBrush" Color="#ef4444"/>
+
+            <!-- Modern Slider Style -->
+            <Style x:Key="ModernSlider" TargetType="Slider">
+                  <Setter Property="Height" Value="24"/>
+                  <Setter Property="Template">
+                        <Setter.Value>
+                              <ControlTemplate TargetType="Slider">
+                                    <Grid>
+                                          <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                          </Grid.RowDefinitions>
+
+                                          <!-- Track -->
+                                          <Border Grid.Row="0" 
+                                   Height="6" 
+                                   Background="{StaticResource BorderBrush}"
+                                   CornerRadius="3"
+                                   VerticalAlignment="Center">
+                                                <Border x:Name="PART_SelectionRange"
+                                       Background="{StaticResource AccentBrush}"
+                                       CornerRadius="3"
+                                       HorizontalAlignment="Left"/>
+                                          </Border>
+
+                                          <!-- Track for value visualization -->
+                                          <Track Grid.Row="0" x:Name="PART_Track" VerticalAlignment="Center">
+                                                <Track.DecreaseRepeatButton>
+                                                      <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0"/>
+                                                </Track.DecreaseRepeatButton>
+                                                <Track.IncreaseRepeatButton>
+                                                      <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0"/>
+                                                </Track.IncreaseRepeatButton>
+                                                <Track.Thumb>
+                                                      <Thumb x:Name="thumb">
+                                                            <Thumb.Style>
+                                                                  <Style TargetType="Thumb">
+                                                                        <Setter Property="Template">
+                                                                              <Setter.Value>
+                                                                                    <ControlTemplate TargetType="Thumb">
+                                                                                          <Border Background="{StaticResource PrimaryBrush}"
+                                                                   Width="20" Height="20"
+                                                                   CornerRadius="10"
+                                                                   BorderBrush="White"
+                                                                   BorderThickness="2">
+                                                                                                <Border.Effect>
+                                                                                                      <DropShadowEffect Color="#000000" Opacity="0.2" BlurRadius="4" ShadowDepth="1" Direction="270"/>
+                                                                                                </Border.Effect>
+                                                                                          </Border>
+                                                                                          <ControlTemplate.Triggers>
+                                                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                                                      <Setter Property="Cursor" Value="Hand"/>
+                                                                                                </Trigger>
+                                                                                          </ControlTemplate.Triggers>
+                                                                                    </ControlTemplate>
+                                                                              </Setter.Value>
+                                                                        </Setter>
+                                                                  </Style>
+                                                            </Thumb.Style>
+                                                      </Thumb>
+                                                </Track.Thumb>
+                                          </Track>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                          <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                          </Trigger>
+                                    </ControlTemplate.Triggers>
+                              </ControlTemplate>
+                        </Setter.Value>
+                  </Setter>
+            </Style>
+
+            <!-- Text Styles -->
+            <Style x:Key="SectionHeaderText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="14"/>
+                  <Setter Property="FontWeight" Value="SemiBold"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            </Style>
+
+            <Style x:Key="LabelText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="13"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            </Style>
+
+            <Style x:Key="ValueText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="13"/>
+                  <Setter Property="FontWeight" Value="Medium"/>
+                  <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+            </Style>
+
+            <Style x:Key="ErrorText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="11"/>
+                  <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
+                  <Setter Property="Margin" Value="0,2,0,0"/>
+            </Style>
+      </UserControl.Resources>
+
+      <!-- AI Configuration Card -->
+      <Border Background="White" 
+            BorderBrush="{StaticResource BorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="8" 
+            Padding="16" 
+            Margin="0,8,0,0">
+            <Border.Effect>
+                  <DropShadowEffect Color="#000000" Opacity="0.04" BlurRadius="8" ShadowDepth="1" Direction="270"/>
+            </Border.Effect>
+
             <StackPanel>
-                  <TextBlock Text="AI Player Settings" FontWeight="Bold" Margin="0,0,0,10"/>
-                  
-                  <!-- Move Delay -->
-                  <Grid Margin="0,5">
+                  <!-- Header with Icon -->
+                  <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
                               <ColumnDefinition Width="Auto"/>
+                              <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- AI Icon -->
+                        <Border Grid.Column="0" 
+                       Background="{StaticResource AccentBrush}" 
+                       Width="24" Height="24" 
+                       CornerRadius="12" 
+                       Margin="0,0,8,0">
+                              <TextBlock Text="🤖" 
+                              HorizontalAlignment="Center" 
+                              VerticalAlignment="Center" 
+                              FontSize="12"/>
+                        </Border>
+
+                        <TextBlock Grid.Column="1" 
+                          Text="AI Player Settings" 
+                          Style="{StaticResource SectionHeaderText}" 
+                          VerticalAlignment="Center"/>
+                  </Grid>
+
+                  <!-- Move Delay Setting -->
+                  <Grid Margin="0,0,0,8">
+                        <Grid.RowDefinitions>
+                              <RowDefinition Height="Auto"/>
+                              <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
                               <ColumnDefinition Width="*"/>
                               <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="Move Delay:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <Slider Grid.Column="1"
-                              MinWidth="100"
-                              Minimum="0" Maximum="5000" 
-                              Value="{Binding MoveDelayMs}"
-                              TickFrequency="500"
-                              IsSnapToTickEnabled="True"
-                              VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" 
-                                 Text="{Binding MoveDelayMs, StringFormat='{}{0}ms'}" 
-                                 VerticalAlignment="Center" 
-                                 Margin="10,0,0,0"
-                                 MinWidth="50"/>
+                        <!-- Label -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" 
+                          Text="Move Delay" 
+                          Style="{StaticResource LabelText}" 
+                          Margin="0,0,0,8"/>
+
+                        <!-- Value Display -->
+                        <Border Grid.Row="0" Grid.Column="1" 
+                       Background="{StaticResource SurfaceBrush}" 
+                       BorderBrush="{StaticResource BorderBrush}"
+                       BorderThickness="1"
+                       CornerRadius="4" 
+                       Padding="8,4"
+                       MinWidth="60">
+                              <TextBlock Text="{Binding MoveDelayMs, StringFormat='{}{0}ms'}" 
+                              Style="{StaticResource ValueText}"
+                              HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Slider -->
+                        <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                       Minimum="0" Maximum="5000" 
+                       Value="{Binding MoveDelayMs}"
+                       TickFrequency="500"
+                       IsSnapToTickEnabled="True"
+                       Style="{StaticResource ModernSlider}"
+                       Margin="0,8,0,0"/>
                   </Grid>
 
                   <!-- Validation Errors -->
-                  <ItemsControl ItemsSource="{Binding ValidationErrors}" Margin="0,5">
+                  <ItemsControl ItemsSource="{Binding ValidationErrors}" Margin="0,8,0,0">
                         <ItemsControl.ItemTemplate>
                               <DataTemplate>
-                                    <TextBlock Text="{Binding}" Foreground="Red" FontSize="10"/>
+                                    <Grid Margin="0,2">
+                                          <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                          </Grid.ColumnDefinitions>
+
+                                          <!-- Error Icon -->
+                                          <Border Grid.Column="0" 
+                                   Background="{StaticResource ErrorBrush}" 
+                                   Width="16" Height="16" 
+                                   CornerRadius="8" 
+                                   Margin="0,0,6,0"
+                                   VerticalAlignment="Top">
+                                                <TextBlock Text="!" 
+                                          Foreground="White" 
+                                          FontSize="10" 
+                                          FontWeight="Bold"
+                                          HorizontalAlignment="Center" 
+                                          VerticalAlignment="Center"/>
+                                          </Border>
+
+                                          <!-- Error Message -->
+                                          <TextBlock Grid.Column="1" 
+                                      Text="{Binding}" 
+                                      Style="{StaticResource ErrorText}"
+                                      TextWrapping="Wrap"/>
+                                    </Grid>
                               </DataTemplate>
                         </ItemsControl.ItemTemplate>
                   </ItemsControl>

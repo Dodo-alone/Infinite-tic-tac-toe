@@ -5,38 +5,252 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Infinite_tic_tac_toe.UserInterface.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-      <DockPanel>
-            <!-- Player Config -->
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
-                  <StackPanel Margin="5">
-                        <TextBlock Text="Player 1 (Cross):" />
-                        <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
+             d:DesignHeight="900" d:DesignWidth="800">
+
+      <UserControl.Resources>
+            <!-- Modern Color Palette -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#2563eb"/>
+            <SolidColorBrush x:Key="SecondaryBrush" Color="#64748b"/>
+            <SolidColorBrush x:Key="AccentBrush" Color="#0ea5e9"/>
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#f8fafc"/>
+            <SolidColorBrush x:Key="CardBrush" Color="#ffffff"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#e2e8f0"/>
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1e293b"/>
+            <SolidColorBrush x:Key="TextSecondaryBrush" Color="#64748b"/>
+
+            <!-- Modern Gradients -->
+            <LinearGradientBrush x:Key="BackgroundGradient" StartPoint="0,0" EndPoint="1,1">
+                  <GradientStop Color="#f8fafc" Offset="0"/>
+                  <GradientStop Color="#f1f5f9" Offset="1"/>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="ButtonGradient" StartPoint="0,0" EndPoint="0,1">
+                  <GradientStop Color="#3b82f6" Offset="0"/>
+                  <GradientStop Color="#2563eb" Offset="1"/>
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="ButtonHoverGradient" StartPoint="0,0" EndPoint="0,1">
+                  <GradientStop Color="#60a5fa" Offset="0"/>
+                  <GradientStop Color="#3b82f6" Offset="1"/>
+            </LinearGradientBrush>
+
+            <!-- Modern Card Style -->
+            <Style x:Key="ModernCard" TargetType="Border">
+                  <Setter Property="Background" Value="{StaticResource CardBrush}"/>
+                  <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                  <Setter Property="BorderThickness" Value="1"/>
+                  <Setter Property="CornerRadius" Value="12"/>
+                  <Setter Property="Effect">
+                        <Setter.Value>
+                              <DropShadowEffect Color="#000000" Opacity="0.08" BlurRadius="12" ShadowDepth="2" Direction="270"/>
+                        </Setter.Value>
+                  </Setter>
+            </Style>
+
+            <!-- Modern ComboBox Style -->
+            <Style x:Key="ModernComboBox" TargetType="ComboBox">
+                  <Setter Property="Background" Value="{StaticResource CardBrush}"/>
+                  <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+                  <Setter Property="BorderThickness" Value="1"/>
+                  <Setter Property="Padding" Value="12,8"/>
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="14"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                  <Setter Property="Template">
+                        <Setter.Value>
+                              <ControlTemplate TargetType="ComboBox">
+                                    <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                                          <Grid>
+                                                <ToggleButton x:Name="toggleButton"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                            ClickMode="Press">
+                                                      <Grid>
+                                                            <ContentPresenter x:Name="contentPresenter"
+                                                        Content="{TemplateBinding SelectionBoxItem}"
+                                                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                        Margin="{TemplateBinding Padding}"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center"/>
+                                                            <Path x:Name="arrow"
+                                            Data="M 0 0 L 4 4 L 8 0 Z"
+                                            Fill="{StaticResource SecondaryBrush}"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="0,0,12,0"/>
+                                                      </Grid>
+                                                </ToggleButton>
+                                                <Popup x:Name="popup"
+                                     IsOpen="{TemplateBinding IsDropDownOpen}"
+                                     Placement="Bottom"
+                                     PlacementTarget="{Binding ElementName=border}">
+                                                      <Border Background="{StaticResource CardBrush}"
+                                          BorderBrush="{StaticResource BorderBrush}"
+                                          BorderThickness="1"
+                                          CornerRadius="8"
+                                          MinWidth="{TemplateBinding ActualWidth}">
+                                                            <Border.Effect>
+                                                                  <DropShadowEffect Color="#000000" Opacity="0.15" BlurRadius="16" ShadowDepth="4" Direction="270"/>
+                                                            </Border.Effect>
+                                                            <ScrollViewer>
+                                                                  <ItemsPresenter/>
+                                                            </ScrollViewer>
+                                                      </Border>
+                                                </Popup>
+                                          </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                          <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                          </Trigger>
+                                          <Trigger Property="IsFocused" Value="True">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                          </Trigger>
+                                    </ControlTemplate.Triggers>
+                              </ControlTemplate>
+                        </Setter.Value>
+                  </Setter>
+            </Style>
+
+            <!-- Modern Button Style -->
+            <Style x:Key="ModernButton" TargetType="Button">
+                  <Setter Property="Background" Value="{StaticResource ButtonGradient}"/>
+                  <Setter Property="BorderThickness" Value="0"/>
+                  <Setter Property="Foreground" Value="White"/>
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="14"/>
+                  <Setter Property="FontWeight" Value="SemiBold"/>
+                  <Setter Property="Padding" Value="20,12"/>
+                  <Setter Property="Cursor" Value="Hand"/>
+                  <Setter Property="Template">
+                        <Setter.Value>
+                              <ControlTemplate TargetType="Button">
+                                    <Border x:Name="border" 
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                                          <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                          <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{StaticResource ButtonHoverGradient}"/>
+                                          </Trigger>
+                                          <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                                <Setter TargetName="border" Property="RenderTransform">
+                                                      <Setter.Value>
+                                                            <ScaleTransform ScaleX="0.98" ScaleY="0.98"/>
+                                                      </Setter.Value>
+                                                </Setter>
+                                                <Setter TargetName="border" Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                          </Trigger>
+                                          <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Opacity" Value="0.5"/>
+                                          </Trigger>
+                                    </ControlTemplate.Triggers>
+                              </ControlTemplate>
+                        </Setter.Value>
+                  </Setter>
+            </Style>
+
+            <!-- Modern Text Styles -->
+            <Style x:Key="HeaderText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="16"/>
+                  <Setter Property="FontWeight" Value="SemiBold"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            </Style>
+
+            <Style x:Key="BodyText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="14"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            </Style>
+
+            <Style x:Key="StatusText" TargetType="TextBlock">
+                  <Setter Property="FontFamily" Value="Segoe UI"/>
+                  <Setter Property="FontSize" Value="18"/>
+                  <Setter Property="FontWeight" Value="Medium"/>
+                  <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+            </Style>
+      </UserControl.Resources>
+
+      <!-- Main Container with Gradient Background -->
+      <Border Background="{StaticResource BackgroundGradient}">
+            <Grid Margin="24">
+                  <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                  </Grid.RowDefinitions>
+
+                  <!-- Player Configuration Section -->
+                  <Border Grid.Row="0" Style="{StaticResource ModernCard}" Padding="24" Margin="0,0,0,24">
+                        <Grid>
+                              <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                              </Grid.ColumnDefinitions>
+
+                              <!-- Player 1 Configuration -->
+                              <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                    <TextBlock Text="Player 1 (✕)" Style="{StaticResource HeaderText}" Margin="0,0,0,12"/>
+                                    <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
                                   SelectedItem="{Binding SelectedPlayer1Type}"
-                                  DisplayMemberPath="DisplayName" />
-                        <!-- Dynamic config panel for Player 1 -->
-                        <ContentControl Content="{Binding SelectedPlayer1SettingsView}" />
-                  </StackPanel>
+                                  DisplayMemberPath="DisplayName"
+                                  Style="{StaticResource ModernComboBox}"
+                                  Margin="0,0,0,16"/>
+                                    <ContentControl Content="{Binding SelectedPlayer1SettingsView}"/>
+                              </StackPanel>
 
-                  <StackPanel Margin="5">
-                        <TextBlock Text="Player 2 (Naught):" />
-                        <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
+                              <!-- Player 2 Configuration -->
+                              <StackPanel Grid.Column="1" Margin="16,0,16,0">
+                                    <TextBlock Text="Player 2 (⭕)" Style="{StaticResource HeaderText}" Margin="0,0,0,12"/>
+                                    <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
                                   SelectedItem="{Binding SelectedPlayer2Type}"
-                                  DisplayMemberPath="DisplayName" />
-                        <ContentControl Content="{Binding SelectedPlayer2SettingsView}" />
-                  </StackPanel>
+                                  DisplayMemberPath="DisplayName"
+                                  Style="{StaticResource ModernComboBox}"
+                                  Margin="0,0,0,16"/>
+                                    <ContentControl Content="{Binding SelectedPlayer2SettingsView}"/>
+                              </StackPanel>
 
-                  <Button Content="Start Game" Command="{Binding StartGameCommand}" Margin="10,0,0,0" />
-            </StackPanel>
+                              <!-- Start and reset Game Button -->
+                              <StackPanel Grid.Column="2">
+                                    <Button
+                                    Content="Start Game" 
+                                    Command="{Binding StartGameCommand}" 
+                                    Style="{StaticResource ModernButton}"
+                                    VerticalAlignment="Top"
+                                    MinWidth="120"
+                                    Margin="0 15 0 20 "/>
+                                    <Button 
+                                    Content="Reset Game" 
+                                    Command="{Binding ResetGameCommand}" 
+                                    Style="{StaticResource ModernButton}"
+                                    VerticalAlignment="Top"
+                                    MinWidth="120"/>
+                              </StackPanel>
+                        </Grid>
+                  </Border>
 
-            <!-- Game Board -->
-            <local:GameBoardUserControl DataContext="{Binding}" />
+                  <!-- Game Board Section -->
+                  <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <local:GameBoardUserControl DataContext="{Binding}"/>
+                  </Border>
 
-            <!-- Status -->
-            <TextBlock DockPanel.Dock="Bottom"
-                   Text="{Binding StatusMessage}" 
-                   HorizontalAlignment="Center"
-                   Margin="10"
-                   FontSize="16" />
-      </DockPanel>
+                  <!-- Status Section -->
+                  <Border Grid.Row="2" Style="{StaticResource ModernCard}" Padding="20" Margin="0,24,0,0">
+                        <TextBlock Text="{Binding StatusMessage}" 
+                           Style="{StaticResource StatusText}"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"/>
+                  </Border>
+            </Grid>
+      </Border>
 </UserControl>

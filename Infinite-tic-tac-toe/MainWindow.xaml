@@ -6,8 +6,11 @@
         xmlns:local="clr-namespace:Infinite_tic_tac_toe"
         xmlns:usercontrols="clr-namespace:Infinite_tic_tac_toe.UserInterface.UserControls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="800">
-    <Grid>
+        Title="MainWindow" Width="800"
+        SizeToContent="Height">
+
+      <Grid>
             <usercontrols:GameUserControl/>
-    </Grid>
+      </Grid>
+
 </Window>
