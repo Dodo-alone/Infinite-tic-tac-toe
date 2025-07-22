@@ -28,10 +28,23 @@
                                     <!-- Track for value visualization -->
                                     <Track Grid.Row="0" x:Name="PART_Track" VerticalAlignment="Center">
                                           <Track.DecreaseRepeatButton>
-                                                <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0"/>
+                                                <RepeatButton Background="Transparent" BorderThickness="0">
+                                                      <RepeatButton.Template>
+                                                            <ControlTemplate TargetType="RepeatButton">
+                                                                  <Rectangle Fill="Transparent"/>
+                                                            </ControlTemplate>
+                                                      </RepeatButton.Template>
+                                                </RepeatButton>
                                           </Track.DecreaseRepeatButton>
+
                                           <Track.IncreaseRepeatButton>
-                                                <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0"/>
+                                                <RepeatButton Background="Transparent" BorderThickness="0">
+                                                      <RepeatButton.Template>
+                                                            <ControlTemplate TargetType="RepeatButton">
+                                                                  <Rectangle Fill="Transparent"/>
+                                                            </ControlTemplate>
+                                                      </RepeatButton.Template>
+                                                </RepeatButton>
                                           </Track.IncreaseRepeatButton>
                                           <Track.Thumb>
                                                 <Thumb x:Name="thumb">
@@ -188,47 +201,85 @@
                   <Setter.Value>
                         <ControlTemplate TargetType="ComboBox">
                               <Border x:Name="border" 
-                              Background="{TemplateBinding Background}"
-                              BorderBrush="{TemplateBinding BorderBrush}"
-                              BorderThickness="{TemplateBinding BorderThickness}"
-                              CornerRadius="8">
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8">
                                     <Grid>
                                           <ToggleButton x:Name="toggleButton"
-                                          Background="Transparent"
-                                          BorderThickness="0"
-                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press">
-                                                <Grid>
-                                                      <ContentPresenter x:Name="contentPresenter"
-                                                      Content="{TemplateBinding SelectionBoxItem}"
-                                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                                      Margin="{TemplateBinding Padding}"
-                                                      HorizontalAlignment="Left"
-                                                      VerticalAlignment="Center"/>
-                                                      <Path x:Name="arrow"
-                                                      Data="M 0 0 L 4 4 L 8 0 Z"
-                                                      Fill="{StaticResource SecondaryBrush}"
-                                                      HorizontalAlignment="Right"
-                                                      VerticalAlignment="Center"
-                                                      Margin="0,0,12,0"/>
-                                                </Grid>
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                        ClickMode="Press">
+                                                <ToggleButton.Template>
+                                                      <ControlTemplate TargetType="ToggleButton">
+                                                            <Border x:Name="toggleBorder"
+                                                                    Background="Transparent"
+                                                                    CornerRadius="8">
+                                                                  <Grid>
+                                                                        <ContentPresenter x:Name="contentPresenter"
+                                                                                          Content="{Binding SelectionBoxItem, RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}"
+                                                                                          ContentTemplate="{Binding SelectionBoxItemTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}"
+                                                                                          Margin="{Binding Padding, RelativeSource={RelativeSource FindAncestor, AncestorType=ComboBox}}"
+                                                                                          HorizontalAlignment="Left"
+                                                                                          VerticalAlignment="Center"/>
+                                                                        <Path x:Name="arrow"
+                                                                        Data="M 0 0 L 4 4 L 8 0 Z"
+                                                                        Fill="{StaticResource SecondaryBrush}"
+                                                                        HorizontalAlignment="Right"
+                                                                        VerticalAlignment="Center"
+                                                                        Margin="0,0,12,0"/>
+                                                                  </Grid>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                  <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="toggleBorder" Property="Background" Value="{StaticResource ButtonHoverGradient}"/>
+                                                                  </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                      </ControlTemplate>
+                                                </ToggleButton.Template>
                                           </ToggleButton>
                                           <Popup x:Name="popup"
-                                          IsOpen="{TemplateBinding IsDropDownOpen}"
-                                          Placement="Bottom"
-                                          PlacementTarget="{Binding ElementName=border}">
-                                                <Border Background="{StaticResource CardBrush}"
-                                                BorderBrush="{StaticResource BorderBrush}"
-                                                BorderThickness="1"
-                                                CornerRadius="8"
-                                                MinWidth="{TemplateBinding ActualWidth}">
-                                                      <Border.Effect>
-                                                            <DropShadowEffect Color="#000000" Opacity="0.15" BlurRadius="16" ShadowDepth="4" Direction="270"/>
-                                                      </Border.Effect>
-                                                      <ScrollViewer>
-                                                            <ItemsPresenter/>
-                                                      </ScrollViewer>
-                                                </Border>
+                                                 IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                 Placement="Bottom"
+                                                 PlacementTarget="{Binding ElementName=border}"
+                                                 AllowsTransparency="True">
+                                                <Grid>
+                                                      <Border x:Name="dropdownBorder"
+                                                            Background="{StaticResource CardBrush}"
+                                                            BorderBrush="{StaticResource BorderBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="8"
+                                                            MinWidth="{TemplateBinding ActualWidth}"
+                                                            Margin="0,1,0,8">
+                                                            <Border.Effect>
+                                                                  <DropShadowEffect Color="#000000" 
+                                                                                  Opacity="0.15" 
+                                                                                  BlurRadius="16" 
+                                                                                  ShadowDepth="4" 
+                                                                                  Direction="270"/>
+                                                            </Border.Effect>
+                                                            <Border Background="{StaticResource CardBrush}"
+                                                                  CornerRadius="8">
+                                                                  <ScrollViewer x:Name="DropDownScrollViewer"
+                                                                              BorderThickness="0"
+                                                                              Background="Transparent">
+                                                                        <Grid RenderOptions.ClearTypeHint="Enabled">
+                                                                              <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                                                                    <Rectangle x:Name="OpaqueRect"
+                                                                                                Height="{Binding ElementName=dropdownBorder,Path=ActualHeight}" 
+                                                                                                Width="{Binding ElementName=dropdownBorder,Path=ActualWidth}"
+                                                                                                Fill="{StaticResource CardBrush}"
+                                                                                                RadiusX="8"
+                                                                                                RadiusY="8"/>
+                                                                              </Canvas>
+                                                                              <ItemsPresenter x:Name="ItemsPresenter"
+                                                                                                 KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                                                        </Grid>
+                                                                  </ScrollViewer>
+                                                            </Border>
+                                                      </Border>
+                                                </Grid>
                                           </Popup>
                                     </Grid>
                               </Border>

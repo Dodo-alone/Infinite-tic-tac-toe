@@ -29,10 +29,15 @@
                               <StackPanel Grid.Column="0" Margin="0,0,16,0">
                                     <TextBlock Text="Player 1 (✕)" Style="{StaticResource HeaderText}" Margin="0,0,0,12"/>
                                     <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
-                                  SelectedItem="{Binding SelectedPlayer1Type}"
-                                  DisplayMemberPath="DisplayName"
-                                  Style="{StaticResource ModernComboBox}"
-                                  Margin="0,0,0,16"/>
+                                              SelectedItem="{Binding SelectedPlayer1Type}"
+                                              Style="{StaticResource ModernComboBox}"
+                                              Margin="0,0,0,16">
+                                          <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                      <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                          </ComboBox.ItemTemplate>
+                                    </ComboBox>
                                     <ContentControl Content="{Binding SelectedPlayer1SettingsView}"/>
                               </StackPanel>
 
@@ -40,10 +45,15 @@
                               <StackPanel Grid.Column="1" Margin="16,0,16,0">
                                     <TextBlock Text="Player 2 (⭕)" Style="{StaticResource HeaderText}" Margin="0,0,0,12"/>
                                     <ComboBox ItemsSource="{Binding AvailablePlayerTypes}" 
-                                  SelectedItem="{Binding SelectedPlayer2Type}"
-                                  DisplayMemberPath="DisplayName"
-                                  Style="{StaticResource ModernComboBox}"
-                                  Margin="0,0,0,16"/>
+                                              SelectedItem="{Binding SelectedPlayer2Type}"
+                                              Style="{StaticResource ModernComboBox}"
+                                              Margin="0,0,0,16">
+                                          <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                      <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                          </ComboBox.ItemTemplate>
+                                    </ComboBox>
                                     <ContentControl Content="{Binding SelectedPlayer2SettingsView}"/>
                               </StackPanel>
 
