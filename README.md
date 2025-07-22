@@ -16,17 +16,20 @@
 
 ##  Getting Started
 
+No binaries are included in this repo
+
 To run the game:
 
 1. Clone or download this repository.
-2. Navigate to the following folder:
-Infinite-tic-tac-toe\Infinite-tic-tac-toe\bin\Release\net8.0-windows
-3. Run the executable:
+2. Run dotnet build against the solution file `Infinite-tic-tac-toe.sln`
+3. Navigate to the following folder:
+Infinite-tic-tac-toe\bin\Release\net8.0-windows
+4. Run the executable:
 Infinite-tic-tac-toe.exe
 
 
 
->  Requires [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) to be installed on your machine.
+>  Requires [.NET 8.0 Runtime and SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) to be installed on your machine.
 
 ---
 
