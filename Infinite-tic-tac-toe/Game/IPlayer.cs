@@ -39,5 +39,12 @@ namespace Infinite_tic_tac_toe.Game
             /// <param name="board">The board we are moving from</param>
             /// <returns>The board after our move completes</returns>
             public Task<GameBoard?> GetNextMove(GameBoard board);
+
+            /// <summary>
+            /// Preform any necessary finalization on the finishing game board
+            /// Possible no op
+            /// </summary>
+            /// <param name="board"></param>
+            public void FinishGame(GameBoard board);
       }
 }

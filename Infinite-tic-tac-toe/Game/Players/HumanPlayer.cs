@@ -33,5 +33,10 @@ namespace Infinite_tic_tac_toe.Game.Players
                   _moveTcs = new TaskCompletionSource<GameBoard?>();
                   return _moveTcs.Task;
             }
+
+            public void FinishGame(GameBoard board)
+            {
+                  return;
+            }
       }
 }

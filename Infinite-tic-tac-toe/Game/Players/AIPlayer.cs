@@ -44,6 +44,11 @@ namespace Infinite_tic_tac_toe.Game.Players
                   return result.nextBoard;
             }
 
+            public void FinishGame(GameBoard board)
+            {
+                  return;
+            }
+
             /// <summary>
             /// Gets the current configuration
             /// </summary>

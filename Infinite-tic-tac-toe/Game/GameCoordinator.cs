@@ -102,6 +102,8 @@ namespace Infinite_tic_tac_toe.Game
 
                               var result = $"Player {winningPlayer?.Name} ({winner}) wins!";
                               GameOver?.Invoke(winningPlayer!, result);
+                              PlayerCross.FinishGame(CurrentBoard);
+                              PlayerNaught.FinishGame(CurrentBoard);
                               break;
                         }
 
